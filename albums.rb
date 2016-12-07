@@ -3,7 +3,7 @@ require_relative ('sql_runner')
 
 class Album
 
-  attr_reader :title, :genre, :id
+  attr_accessor :title, :genre, :id
   attr_accessor :artist_id
 
   def initialize(options)
@@ -32,9 +32,9 @@ class Album
     return albums.map { |album| Album.new( album ) }
   end
 
-  def self.list_by_artist(artist)
+  def self.find_album(id)
     sql = "
-      SELECT * FROM albums WHERE artist_id = #{artist.id};
+      SELECT * FROM albums WHERE id = #{id};
     "
     albums = SqlRunner.run( sql )
     return albums.map { |album| Album.new( album ) }
@@ -42,7 +42,7 @@ class Album
 
   def show_artist_name()
     sql = "
-      SELECT name FROM artists WHERE id = #{@artist_id};
+      SELECT * FROM artists WHERE id = #{@artist_id};
     "
     name = SqlRunner.run( sql )
     return name[0]
@@ -52,7 +52,24 @@ class Album
     sql = "
       DELETE FROM albums;
     "
-    SqlRunner.run( sql)
+    SqlRunner.run( sql )
+  end
+
+  def update()
+    sql = "
+      UPDATE albums 
+      SET (title, genre) = ('#{@title}', '#{@genre}')
+      WHERE id = #{@id};
+    "
+    SqlRunner.run( sql )
+  end
+
+  def delete()
+    sql = "
+      DELETE FROM albums 
+      WHERE id = #{@id};
+    "
+    SqlRunner.run( sql )
   end
 
 end
